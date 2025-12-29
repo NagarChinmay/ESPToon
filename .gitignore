@@ -22,3 +22,6 @@ __pycache__/
 
 # Local settings
 .claude/settings.local.json
+
+# Development files (not for repo)
+prompt.txt
