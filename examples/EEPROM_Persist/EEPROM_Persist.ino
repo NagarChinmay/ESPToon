@@ -96,17 +96,58 @@ void loadFromEEPROM() {
   }
 }
 
+void saveAndLoadSameStream() {
+  Serial.println("\n=== Save and Load (Same Stream) ===");
+
+  ToonDocument doc;
+  doc["device"]["id"] = "ESP32-01";
+  doc["device"]["temp"] = 23.5;
+  doc["device"]["enabled"] = true;
+
+  Serial.println("Original document:");
+  serializeToon(doc, Serial);
+  Serial.println();
+
+  // Save to EEPROM using single stream instance
+  EEPROMStream eeprom(EEPROM_ADDR, EEPROM_SIZE);
+  serializeToon(doc, eeprom);
+  eeprom.commit();
+
+  // CRITICAL: Reset position before reading
+  eeprom.reset();
+
+  // Load from same stream
+  ToonDocument loaded;
+  if (deserializeToon(loaded, eeprom)) {
+    Serial.println("✓ Loaded from same stream:");
+    serializeToon(loaded, Serial);
+    Serial.println();
+
+    String id = loaded["device"]["id"];
+    float temp = loaded["device"]["temp"];
+    bool enabled = loaded["device"]["enabled"];
+
+    Serial.println("Values:");
+    Serial.print("  ID: "); Serial.println(id);
+    Serial.print("  Temp: "); Serial.println(temp);
+    Serial.print("  Enabled: "); Serial.println(enabled ? "true" : "false");
+  } else {
+    Serial.println("✗ Load failed!");
+  }
+}
+
 void setup() {
   Serial.begin(115200);
   delay(1000);
 
   Serial.println("\n=== ESPToon EEPROM Persistence Example ===");
 
-  // First run: save data
+  // Pattern 1: Separate streams (position auto-resets)
   saveToEEPROM();
-
-  // Second run: load data
   loadFromEEPROM();
+
+  // Pattern 2: Same stream (must call reset())
+  saveAndLoadSameStream();
 
   Serial.println("\n=== Example Complete ===");
   Serial.println("Power cycle the device to test persistence!");

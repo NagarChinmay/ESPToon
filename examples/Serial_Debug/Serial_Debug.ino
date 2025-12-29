@@ -41,34 +41,34 @@ void setup() {
   doc["wifi"]["connected"] = true;
 
   // Sensor readings (array of objects)
-  ToonArray sensors = doc["sensors"].to<ToonArray>();
+  ToonArray& sensors = doc["sensors"].asArray();
 
-  ToonObject temp = sensors.createNestedObject();
+  ToonObject& temp = sensors.createNestedObject();
   temp["name"] = "Temperature";
   temp["value"] = 24.8;
   temp["unit"] = "C";
   temp["status"] = "ok";
 
-  ToonObject humid = sensors.createNestedObject();
+  ToonObject& humid = sensors.createNestedObject();
   humid["name"] = "Humidity";
   humid["value"] = 58.3;
   humid["unit"] = "%";
   humid["status"] = "ok";
 
-  ToonObject pressure = sensors.createNestedObject();
+  ToonObject& pressure = sensors.createNestedObject();
   pressure["name"] = "Pressure";
   pressure["value"] = 1013.25;
   pressure["unit"] = "hPa";
   pressure["status"] = "ok";
 
   // GPIO configuration
-  ToonArray gpios = doc["gpio"]["outputs"].to<ToonArray>();
+  ToonArray& gpios = doc["gpio"]["outputs"].asArray();
   gpios.add(2);
   gpios.add(4);
   gpios.add(16);
   gpios.add(17);
 
-  ToonArray inputs = doc["gpio"]["inputs"].to<ToonArray>();
+  ToonArray& inputs = doc["gpio"]["inputs"].asArray();
   inputs.add(18);
   inputs.add(19);
 

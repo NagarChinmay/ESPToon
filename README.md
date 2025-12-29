@@ -69,8 +69,8 @@ doc["device"]["id"] = "ESP32-01";
 doc["device"]["temp"] = 23.5;
 doc["device"]["enabled"] = true;
 
-// Arrays
-ToonArray sensors = doc["sensors"].to<ToonArray>();
+// Arrays (use reference!)
+ToonArray& sensors = doc["sensors"].asArray();
 sensors.add("DHT22");
 sensors.add("BMP280");
 
@@ -81,6 +81,9 @@ serializeToon(doc, Serial);
 EEPROMStream eeprom(0, 512);
 serializeToon(doc, eeprom);
 eeprom.commit();
+
+// Reset position before reading
+eeprom.reset();
 
 // Load from EEPROM
 ToonDocument loaded;
@@ -110,25 +113,39 @@ doc["key"] = "value";
 
 ### Nested Objects
 
+**IMPORTANT:** Always use reference variables (`&`) when building nested structures:
+
 ```cpp
-ToonObject config = doc["config"].to<ToonObject>();
+// CORRECT - Using reference
+ToonObject& config = doc["config"].asObject();
 config["ssid"] = "MyWiFi";
 config["password"] = "secret123";
+
+// WRONG - Creates a copy, changes are lost!
+// ToonObject config = doc["config"].asObject();  // ❌ Don't do this!
 ```
 
 ### Arrays
 
+**IMPORTANT:** Always use reference variables (`&`) when building arrays:
+
 ```cpp
-ToonArray items = doc["items"].to<ToonArray>();
+// CORRECT - Using reference
+ToonArray& items = doc["items"].asArray();
 items.add("first");
 items.add("second");
 items.add(123);
 items.add(45.6);
 
-// Access
+// Access values (no reference needed for reading)
 String first = doc["items"][0];
 int number = doc["items"][2];
 ```
+
+**Why references are required:**
+- Without `&`, you get a **copy** that is discarded
+- With `&`, you modify the **actual** object/array in the document
+- Only needed when **building** structures, not when **reading** values
 
 ## Serialization
 
@@ -161,6 +178,11 @@ file.close();
 EEPROMStream eeprom(0, 512);
 serializeToon(doc, eeprom);
 eeprom.commit();
+
+// To read back:
+eeprom.reset();  // CRITICAL: Reset position before reading
+ToonDocument doc2;
+deserializeToon(doc2, eeprom);
 ```
 
 **ArduinoJson (requires ArduinoJson library):**
@@ -187,6 +209,7 @@ file.close();
 **From EEPROM:**
 ```cpp
 EEPROMStream eeprom(0, 512);
+eeprom.reset();  // CRITICAL: Reset position if reading after writing
 ToonDocument doc;
 if (deserializeToon(doc, eeprom)) {
     // CRC validated
@@ -320,9 +343,11 @@ int32_t asInt();
 float asFloat();
 String asString();
 
-// Template conversion
-ToonObject to<ToonObject>();
-ToonArray to<ToonArray>();
+// Object/Array access (returns references - use with &)
+ToonObject& asObject();
+ToonArray& asArray();
+const ToonObject& asObject() const;
+const ToonArray& asArray() const;
 ```
 
 ## Design Principles

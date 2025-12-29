@@ -43,7 +43,7 @@ void saveToFile() {
   doc["mqtt"]["port"] = 1883;
   doc["mqtt"]["topic"] = "home/sensor/data";
 
-  ToonArray endpoints = doc["api"]["endpoints"].to<ToonArray>();
+  ToonArray& endpoints = doc["api"]["endpoints"].asArray();
   endpoints.add("https://api1.example.com");
   endpoints.add("https://api2.example.com");
 

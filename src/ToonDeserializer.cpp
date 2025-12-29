@@ -1,4 +1,5 @@
 #include "ToonSerializer.h"
+#include "EEPROMStream.h"
 #include <vector>
 
 // ============================================================================
@@ -273,7 +274,7 @@ bool readValue(const uint8_t*& ptr, const uint8_t* end, ToonValue& value) {
 bool deserializeToonBinary(ToonDocument& doc, const uint8_t* buffer, size_t length) {
     doc.clear();
 
-    if (length < 8) return false;  // Minimum: header(4) + version(2) + CRC(2)
+    if (length < 10) return false;  // Minimum: header(4) + version(2) + CRC(2) + length(2)
 
     // Check magic header "TOON"
     if (buffer[0] != 'T' || buffer[1] != 'O' || buffer[2] != 'O' || buffer[3] != 'N') {
@@ -290,8 +291,16 @@ bool deserializeToonBinary(ToonDocument& doc, const uint8_t* buffer, size_t leng
     // Extract CRC
     uint16_t storedCRC = ((uint16_t)buffer[6] << 8) | buffer[7];
 
+    // Extract data length
+    uint16_t dataLength = ((uint16_t)buffer[8] << 8) | buffer[9];
+
+    // Verify we have enough data
+    if (length < 10 + dataLength) {
+        return false;  // Not enough data
+    }
+
     // Calculate CRC of data
-    uint16_t calculatedCRC = calculateCRC16(buffer + 8, length - 8);
+    uint16_t calculatedCRC = calculateCRC16(buffer + 10, dataLength);
 
     // Verify CRC
     if (storedCRC != calculatedCRC) {
@@ -299,8 +308,8 @@ bool deserializeToonBinary(ToonDocument& doc, const uint8_t* buffer, size_t leng
     }
 
     // Parse data
-    const uint8_t* ptr = buffer + 8;
-    const uint8_t* end = buffer + length;
+    const uint8_t* ptr = buffer + 10;
+    const uint8_t* end = buffer + 10 + dataLength;
 
     ToonValue rootValue;
     if (!ToonBinaryReader::readValue(ptr, end, rootValue)) {
@@ -322,10 +331,37 @@ bool deserializeToonBinary(ToonDocument& doc, const uint8_t* buffer, size_t leng
 }
 
 bool deserializeToonBinary(ToonDocument& doc, Stream& input) {
+    // Read header to determine data length
+    uint8_t header[10];  // Magic(4) + Version(2) + CRC(2) + Length(2)
+
+    for (int i = 0; i < 10; i++) {
+        if (!input.available()) return false;
+        header[i] = input.read();
+    }
+
+    // Check magic header
+    if (header[0] != 'T' || header[1] != 'O' || header[2] != 'O' || header[3] != 'N') {
+        return false;
+    }
+
+    // Extract data length
+    uint16_t dataLength = ((uint16_t)header[8] << 8) | header[9];
+
+    // Read data
     std::vector<uint8_t> buffer;
-    while (input.available()) {
+    buffer.reserve(10 + dataLength);
+
+    // Copy header
+    for (int i = 0; i < 10; i++) {
+        buffer.push_back(header[i]);
+    }
+
+    // Read exactly dataLength bytes
+    for (uint16_t i = 0; i < dataLength; i++) {
+        if (!input.available()) return false;
         buffer.push_back(input.read());
     }
+
     return deserializeToonBinary(doc, buffer.data(), buffer.size());
 }
 
@@ -402,18 +438,28 @@ bool deserializeToon(ToonDocument& doc, const char*& source) {
 
 bool deserializeToon(ToonDocument& doc, Stream& source) {
     // Try binary first (check for magic header)
-    uint8_t header[4];
-    size_t read = source.readBytes(header, 4);
+    uint8_t header[10];  // Magic(4) + Version(2) + CRC(2) + Length(2)
+    size_t read = source.readBytes(header, 10);
 
-    if (read == 4 && header[0] == 'T' && header[1] == 'O' && header[2] == 'O' && header[3] == 'N') {
-        // Binary format - read rest
+    if (read >= 4 && header[0] == 'T' && header[1] == 'O' && header[2] == 'O' && header[3] == 'N') {
+        // Binary format - read exactly the data length specified
+        if (read < 10) return false;  // Need full header
+
+        // Extract data length
+        uint16_t dataLength = ((uint16_t)header[8] << 8) | header[9];
+
+        // Build buffer with header + data
         std::vector<uint8_t> buffer;
-        buffer.push_back('T');
-        buffer.push_back('O');
-        buffer.push_back('O');
-        buffer.push_back('N');
+        buffer.reserve(10 + dataLength);
 
-        while (source.available()) {
+        // Copy header
+        for (size_t i = 0; i < 10; i++) {
+            buffer.push_back(header[i]);
+        }
+
+        // Read exactly dataLength bytes
+        for (uint16_t i = 0; i < dataLength; i++) {
+            if (!source.available()) return false;
             buffer.push_back(source.read());
         }
 
@@ -429,6 +475,10 @@ bool deserializeToon(ToonDocument& doc, Stream& source) {
         }
         return deserializeToonText(doc, data);
     }
+}
+
+bool deserializeToon(ToonDocument& doc, EEPROMStream& source) {
+    return deserializeToonBinary(doc, source);
 }
 
 #ifdef ESPTOON_HAS_ARDUINOJSON

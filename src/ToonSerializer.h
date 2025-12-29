@@ -5,6 +5,9 @@
 #include <Stream.h>
 #include <FS.h>
 
+// Forward declaration
+class EEPROMStream;
+
 #ifdef ESP32
 #include <SPIFFS.h>
 #include <LittleFS.h>
@@ -37,6 +40,7 @@ bool serializeToonJson(const ToonDocument& doc, JsonDocument& jsonDoc);
 // Unified serialization API - overloaded functions (target type determines format)
 size_t serializeToon(const ToonDocument& doc, Print& target);
 size_t serializeToon(const ToonDocument& doc, String& target);
+size_t serializeToon(const ToonDocument& doc, EEPROMStream& target);
 
 #ifdef ESPTOON_HAS_ARDUINOJSON
 size_t serializeToon(const ToonDocument& doc, JsonDocument& target);
@@ -66,6 +70,7 @@ bool deserializeToonJson(ToonDocument& doc, const JsonDocument& jsonDoc);
 bool deserializeToon(ToonDocument& doc, String& source);
 bool deserializeToon(ToonDocument& doc, const char*& source);
 bool deserializeToon(ToonDocument& doc, Stream& source);
+bool deserializeToon(ToonDocument& doc, EEPROMStream& source);
 
 #ifdef ESPTOON_HAS_ARDUINOJSON
 bool deserializeToon(ToonDocument& doc, JsonDocument& source);

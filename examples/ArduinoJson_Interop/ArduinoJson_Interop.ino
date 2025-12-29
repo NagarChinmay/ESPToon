@@ -30,7 +30,7 @@ void setup() {
   toonDoc["reading"]["humidity"] = 65.2;
   toonDoc["reading"]["timestamp"] = 1640995200;
 
-  ToonArray alerts = toonDoc["alerts"].to<ToonArray>();
+  ToonArray& alerts = toonDoc["alerts"].asArray();
   alerts.add("temp_high");
   alerts.add("humid_normal");
 

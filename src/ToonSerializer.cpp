@@ -1,4 +1,5 @@
 #include "ToonSerializer.h"
+#include "EEPROMStream.h"
 
 // CRC16-CCITT implementation
 uint16_t calculateCRC16(const uint8_t* data, size_t length) {
@@ -238,17 +239,28 @@ size_t serializeToonBinary(const ToonDocument& doc, Print& output) {
     buffer.push_back(1);
     buffer.push_back(0);
 
+    // Reserve space for CRC (2 bytes) and data length (2 bytes)
+    buffer.push_back(0);  // CRC high byte (placeholder)
+    buffer.push_back(0);  // CRC low byte (placeholder)
+    buffer.push_back(0);  // Data length high byte (placeholder)
+    buffer.push_back(0);  // Data length low byte (placeholder)
+
+    size_t dataStartIndex = buffer.size();  // Index where data starts
+
     // Serialize document as object
     ToonValue rootValue;
     rootValue._setObject(new ToonObject(doc._getRoot()));
     ToonBinary::writeValue(rootValue, buffer);
 
-    // Calculate CRC (excluding header and version)
-    uint16_t crc = calculateCRC16(buffer.data() + 6, buffer.size() - 6);
+    // Calculate data length
+    uint16_t dataLength = buffer.size() - dataStartIndex;
+    buffer[8] = (dataLength >> 8) & 0xFF;
+    buffer[9] = dataLength & 0xFF;
 
-    // Insert CRC after version
-    buffer.insert(buffer.begin() + 6, (crc >> 8) & 0xFF);
-    buffer.insert(buffer.begin() + 7, crc & 0xFF);
+    // Calculate CRC (of data only)
+    uint16_t crc = calculateCRC16(buffer.data() + dataStartIndex, dataLength);
+    buffer[6] = (crc >> 8) & 0xFF;
+    buffer[7] = crc & 0xFF;
 
     // Write to output
     return output.write(buffer.data(), buffer.size());
@@ -267,15 +279,28 @@ size_t serializeToonBinary(const ToonDocument& doc, uint8_t* buffer, size_t buff
     tempBuffer.push_back(1);
     tempBuffer.push_back(0);
 
+    // Reserve space for CRC (2 bytes) and data length (2 bytes)
+    tempBuffer.push_back(0);  // CRC high byte
+    tempBuffer.push_back(0);  // CRC low byte
+    tempBuffer.push_back(0);  // Data length high byte
+    tempBuffer.push_back(0);  // Data length low byte
+
+    size_t dataStartIndex = tempBuffer.size();
+
     // Serialize document
     ToonValue rootValue;
     rootValue._setObject(new ToonObject(doc._getRoot()));
     ToonBinary::writeValue(rootValue, tempBuffer);
 
+    // Calculate data length
+    uint16_t dataLength = tempBuffer.size() - dataStartIndex;
+    tempBuffer[8] = (dataLength >> 8) & 0xFF;
+    tempBuffer[9] = dataLength & 0xFF;
+
     // Calculate CRC
-    uint16_t crc = calculateCRC16(tempBuffer.data() + 6, tempBuffer.size() - 6);
-    tempBuffer.insert(tempBuffer.begin() + 6, (crc >> 8) & 0xFF);
-    tempBuffer.insert(tempBuffer.begin() + 7, crc & 0xFF);
+    uint16_t crc = calculateCRC16(tempBuffer.data() + dataStartIndex, dataLength);
+    tempBuffer[6] = (crc >> 8) & 0xFF;
+    tempBuffer[7] = crc & 0xFF;
 
     // Copy to output buffer
     size_t copySize = min(tempBuffer.size(), bufferSize);
@@ -360,6 +385,10 @@ size_t serializeToon(const ToonDocument& doc, Print& target) {
 
 size_t serializeToon(const ToonDocument& doc, String& target) {
     return serializeToonText(doc, target);
+}
+
+size_t serializeToon(const ToonDocument& doc, EEPROMStream& target) {
+    return serializeToonBinary(doc, target);
 }
 
 #ifdef ESPTOON_HAS_ARDUINOJSON
