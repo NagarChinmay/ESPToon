@@ -1,0 +1,35 @@
+#######################################
+# Syntax Coloring Map For ESPToon
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ToonDocument	KEYWORD1
+ToonObject	KEYWORD1
+ToonArray	KEYWORD1
+ToonValue	KEYWORD1
+EEPROMStream	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+serializeToon	KEYWORD2
+deserializeToon	KEYWORD2
+createNestedObject	KEYWORD2
+createNestedArray	KEYWORD2
+add	KEYWORD2
+set	KEYWORD2
+size	KEYWORD2
+clear	KEYWORD2
+containsKey	KEYWORD2
+remove	KEYWORD2
+isNull	KEYWORD2
+is	KEYWORD2
+to	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################

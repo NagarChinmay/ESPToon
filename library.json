@@ -1,0 +1,32 @@
+{
+  "name": "ESPToon",
+  "version": "1.0.0",
+  "description": "Typed Object Oriented Notation (TOON) - Embedded-first hierarchical data format for ESP32/ESP8266 with binary persistence and CRC validation",
+  "keywords": "toon, esp32, esp8266, c2, c3, s2, s3, data, serialization, embedded, iot, persistence, eeprom, spiffs",
+  "authors": [
+    {
+      "name": "Chinmay Nagar",
+      "email": "chinmay@chipnexa.in",
+      "url": "https://github.com/nagarChinmay",
+      "maintainer": true
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nagarChinmay/ESPToon.git"
+  },
+  "homepage": "https://github.com/nagarChinmay/ESPToon",
+  "license": "MIT",
+  "frameworks": "arduino",
+  "platforms": [
+    "espressif32",
+    "espressif8266"
+  ],
+  "dependencies": [
+    {
+      "name": "ArduinoJson",
+      "version": "^6.21.0",
+      "optional": true
+    }
+  ]
+}
