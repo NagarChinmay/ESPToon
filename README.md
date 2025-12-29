@@ -364,6 +364,10 @@ Founder & Engineer at [Chipnexa](https://chipnexa.in)
 Email: chinmay@chipnexa.in
 GitHub: [@nagarChinmay](https://github.com/nagarChinmay)
 
+**Kevin Panchal**
+Founder & Engineer at [Chipnexa](https://chipnexa.in)
+GitHub: [@KevinPanchal2444](https://github.com/KevinPanchal2444)
+
 ## License
 
 MIT License - See [LICENSE](LICENSE) file for details
