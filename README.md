@@ -366,6 +366,7 @@ GitHub: [@nagarChinmay](https://github.com/nagarChinmay)
 
 **Kevin Panchal**
 Founder & Engineer at [Chipnexa](https://chipnexa.in)
+Email: kevinpanchal2004@gmail.com
 GitHub: [@KevinPanchal2444](https://github.com/KevinPanchal2444)
 
 ## License
