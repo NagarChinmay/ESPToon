@@ -153,10 +153,6 @@ ToonValue& ToonValue::operator[](const char* key) {
     return (*_value._object)[key];
 }
 
-ToonValue& ToonValue::operator[](int index) {
-    return (*this)[(size_t)index];
-}
-
 ToonValue& ToonValue::operator[](size_t index) {
     if (_type != ToonType::TOON_ARRAY) {
         _clear();
@@ -180,10 +176,6 @@ const ToonValue& ToonValue::operator[](const char* key) const {
     }
     static ToonValue nullValue;
     return nullValue;
-}
-
-const ToonValue& ToonValue::operator[](int index) const {
-    return (*this)[(size_t)index];
 }
 
 const ToonValue& ToonValue::operator[](size_t index) const {
