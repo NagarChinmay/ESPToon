@@ -56,11 +56,9 @@ public:
     // Forwarding operators for nested access
     ToonValue& operator[](const String& key);
     ToonValue& operator[](const char* key);
-    ToonValue& operator[](int index);
     ToonValue& operator[](size_t index);
     const ToonValue& operator[](const String& key) const;
     const ToonValue& operator[](const char* key) const;
-    const ToonValue& operator[](int index) const;
     const ToonValue& operator[](size_t index) const;
 
     // Type checking

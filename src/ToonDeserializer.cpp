@@ -62,7 +62,7 @@ bool parseSimpleArray(const String& line, ToonArray& arr) {
 
     // Split by comma
     int start = 0;
-    for (int i = 0; i <= valuesStr.length(); i++) {
+    for (size_t i = 0; i <= valuesStr.length(); i++) {
         if (i == valuesStr.length() || valuesStr[i] == ',') {
             String token = trim(valuesStr.substring(start, i));
             if (token.length() > 0) {
@@ -86,7 +86,7 @@ bool deserializeToonText(ToonDocument& doc, const String& input) {
     int start = 0;
 
     // Split into lines
-    for (int i = 0; i <= input.length(); i++) {
+    for (size_t i = 0; i <= input.length(); i++) {
         if (i == input.length() || input[i] == '\n') {
             String line = input.substring(start, i);
             if (line.endsWith("\r")) {
@@ -334,7 +334,7 @@ bool deserializeToonBinary(ToonDocument& doc, Stream& input) {
     // Read header to determine data length
     uint8_t header[10];  // Magic(4) + Version(2) + CRC(2) + Length(2)
 
-    for (int i = 0; i < 10; i++) {
+    for (size_t i = 0; i < 10; i++) {
         if (!input.available()) return false;
         header[i] = input.read();
     }
@@ -352,7 +352,7 @@ bool deserializeToonBinary(ToonDocument& doc, Stream& input) {
     buffer.reserve(10 + dataLength);
 
     // Copy header
-    for (int i = 0; i < 10; i++) {
+    for (size_t i = 0; i < 10; i++) {
         buffer.push_back(header[i]);
     }
 
