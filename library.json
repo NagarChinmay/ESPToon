@@ -1,6 +1,6 @@
 {
   "name": "ESPToon",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Typed Object Oriented Notation (TOON) - Embedded-first hierarchical data format for ESP32/ESP8266 with binary persistence and CRC validation. Fully compatible with Arduino IDE, PlatformIO, and Arduino CLI.",
   "keywords": "toon, esp32, esp8266, c2, c3, s2, s3, data, serialization, embedded, iot, persistence, eeprom, spiffs",
   "authors": [

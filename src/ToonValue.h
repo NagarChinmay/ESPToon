@@ -49,6 +49,16 @@ public:
     ToonValue& operator=(const ToonValue& other);
     ToonValue& operator=(bool value);
     ToonValue& operator=(int32_t value);
+
+    // Integer type overloads for cross-platform compatibility
+    // These resolve ambiguities across different compilers (MSVC, GCC, Clang)
+    ToonValue& operator=(int value);        // For plain int literals
+    ToonValue& operator=(long value);       // For long literals
+    ToonValue& operator=(unsigned int value);  // For unsigned int
+    ToonValue& operator=(unsigned long value); // For unsigned long
+    ToonValue& operator=(short value);      // For short
+    ToonValue& operator=(unsigned short value); // For unsigned short
+
     ToonValue& operator=(float value);
     ToonValue& operator=(double value);
     ToonValue& operator=(const char* value);

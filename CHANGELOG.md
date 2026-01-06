@@ -2,6 +2,31 @@
 
 All notable changes to ESPToon will be documented in this file.
 
+## [1.0.3] - 2026-01-07
+
+### Fixed
+- **Enhanced Cross-Platform Integer Type Support** - Added comprehensive integer type operator overloads
+  - Added explicit `operator=(unsigned int value)` to handle unsigned integers
+  - Added explicit `operator=(unsigned long value)` to handle unsigned long integers
+  - Added explicit `operator=(short value)` to handle short integers
+  - Added explicit `operator=(unsigned short value)` to handle unsigned short integers
+  - Resolves ALL integer type ambiguities across Windows (MSVC), macOS (Clang), and Linux (GCC)
+  - Ensures assignments like `value = 1`, `value = 1U`, `value = (short)1` all work without ambiguity
+
+### Changed
+- Updated library version to 1.0.3
+
+## [1.0.2] - 2026-01-07
+
+### Fixed
+- **Windows Arduino IDE Ambiguous Overload** - Fixed "ambiguous overload for 'operator='" error on Windows Arduino IDE
+  - Added explicit `operator=(int value)` overload that forwards to `operator=(int32_t value)`
+  - Added explicit `operator=(long value)` overload that forwards to `operator=(int32_t value)`
+  - Resolves compiler ambiguity between int32_t, bool, float, and double when using plain int literals like `value = 1`
+
+### Changed
+- Updated library version to 1.0.2
+
 ## [1.0.1] - 2026-01-06
 
 ### Fixed

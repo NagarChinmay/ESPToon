@@ -106,6 +106,31 @@ ToonValue& ToonValue::operator=(int32_t value) {
     return *this;
 }
 
+// Integer type overload implementations
+ToonValue& ToonValue::operator=(int value) {
+    return operator=(static_cast<int32_t>(value));
+}
+
+ToonValue& ToonValue::operator=(long value) {
+    return operator=(static_cast<int32_t>(value));
+}
+
+ToonValue& ToonValue::operator=(unsigned int value) {
+    return operator=(static_cast<int32_t>(value));
+}
+
+ToonValue& ToonValue::operator=(unsigned long value) {
+    return operator=(static_cast<int32_t>(value));
+}
+
+ToonValue& ToonValue::operator=(short value) {
+    return operator=(static_cast<int32_t>(value));
+}
+
+ToonValue& ToonValue::operator=(unsigned short value) {
+    return operator=(static_cast<int32_t>(value));
+}
+
 ToonValue& ToonValue::operator=(float value) {
     _clear();
     _type = ToonType::TOON_FLOAT;
