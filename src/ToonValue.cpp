@@ -92,31 +92,10 @@ ToonValue& ToonValue::operator=(const ToonValue& other) {
     return *this;
 }
 
-ToonValue& ToonValue::operator=(bool value) {
-    _clear();
-    _type = ToonType::TOON_BOOL;
-    _value._bool = value;
-    return *this;
-}
-
 ToonValue& ToonValue::operator=(int32_t value) {
     _clear();
     _type = ToonType::TOON_INT;
     _value._int = value;
-    return *this;
-}
-
-ToonValue& ToonValue::operator=(float value) {
-    _clear();
-    _type = ToonType::TOON_FLOAT;
-    _value._float = value;
-    return *this;
-}
-
-ToonValue& ToonValue::operator=(double value) {
-    _clear();
-    _type = ToonType::TOON_FLOAT;
-    _value._float = (float)value;
     return *this;
 }
 

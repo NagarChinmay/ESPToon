@@ -46,10 +46,7 @@ public:
     ~ToonValue();
 
     ToonValue& operator=(const ToonValue& other);
-    ToonValue& operator=(bool value);
     ToonValue& operator=(int32_t value);
-    ToonValue& operator=(float value);
-    ToonValue& operator=(double value);
     ToonValue& operator=(const char* value);
     ToonValue& operator=(const String& value);
 
