@@ -1,5 +1,6 @@
 #include "ToonSerializer.h"
 #include "EEPROMStream.h"
+#include <cstring>  // For memcpy()
 
 // CRC16-CCITT implementation
 uint16_t calculateCRC16(const uint8_t* data, size_t length) {
@@ -303,7 +304,7 @@ size_t serializeToonBinary(const ToonDocument& doc, uint8_t* buffer, size_t buff
     tempBuffer[7] = crc & 0xFF;
 
     // Copy to output buffer
-    size_t copySize = min(tempBuffer.size(), bufferSize);
+    size_t copySize = std::min(tempBuffer.size(), bufferSize);
     memcpy(buffer, tempBuffer.data(), copySize);
 
     return copySize;

@@ -1,6 +1,8 @@
 #include "ToonSerializer.h"
 #include "EEPROMStream.h"
 #include <vector>
+#include <cstring>  // For memcpy()
+#include <cctype>   // For isspace()
 
 // ============================================================================
 // TEXT TOON DESERIALIZATION (Simplified parser)

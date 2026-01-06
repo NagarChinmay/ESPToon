@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <WString.h>
+#include <cstdint>  // For int32_t, uint8_t, uint16_t, etc.
 
 // Forward declarations
 class ToonObject;

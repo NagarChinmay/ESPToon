@@ -2,7 +2,12 @@
 
 EEPROMStream::EEPROMStream(size_t address, size_t size)
     : _address(address), _size(size), _position(0), _writeMode(false) {
-    EEPROM.begin(_address + _size);
+    #ifdef ESP32
+        EEPROM.begin(_address + _size);
+    #elif defined(ESP8266)
+        // ESP8266 EEPROM library requires fixed size (max 4096 bytes)
+        EEPROM.begin(4096);
+    #endif
 }
 
 int EEPROMStream::available() {
@@ -60,5 +65,11 @@ void EEPROMStream::setWriteMode(bool mode) {
 }
 
 bool EEPROMStream::commit() {
-    return EEPROM.commit();
+    #ifdef ESP32
+        return EEPROM.commit();
+    #else
+        // ESP8266 auto-commits on EEPROM.write()
+        EEPROM.commit();
+        return true;
+    #endif
 }

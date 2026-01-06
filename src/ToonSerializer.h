@@ -3,22 +3,34 @@
 
 #include "ToonDocument.h"
 #include <Stream.h>
-#include <FS.h>
 
 // Forward declaration
 class EEPROMStream;
 
-#ifdef ESP32
-#include <SPIFFS.h>
-#include <LittleFS.h>
+// Platform-specific includes (only for supported platforms)
+#if defined(ESP32)
+  #include <FS.h>
+  #include <SPIFFS.h>
+  #include <LittleFS.h>
 #elif defined(ESP8266)
-#include <FS.h>
+  #include <FS.h>
+#else
+  #error "ESPToon only supports ESP32 and ESP8266 platforms"
 #endif
 
-// Optional ArduinoJson support - only enabled if user has installed it
-#if __has_include(<ArduinoJson.h>)
-#include <ArduinoJson.h>
-#define ESPTOON_HAS_ARDUINOJSON 1
+// Optional ArduinoJson support - with C++17 feature detection
+#if defined(__has_include)
+  #if __has_include(<ArduinoJson.h>)
+    #include <ArduinoJson.h>
+    #define ESPTOON_HAS_ARDUINOJSON 1
+  #endif
+#else
+  // Fallback for older compilers without C++17 support
+  // Users can manually define ESPTOON_USE_ARDUINOJSON to enable
+  #ifdef ESPTOON_USE_ARDUINOJSON
+    #include <ArduinoJson.h>
+    #define ESPTOON_HAS_ARDUINOJSON 1
+  #endif
 #endif
 
 // CRC16 calculation
