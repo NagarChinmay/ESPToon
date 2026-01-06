@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <WString.h>
 #include <cstdint>  // For int32_t, uint8_t, uint16_t, etc.
+#include <type_traits>  // For std::is_same, std::enable_if
 
 // Forward declarations
 class ToonObject;
@@ -51,13 +52,16 @@ public:
     ToonValue& operator=(int32_t value);
 
     // Integer type overloads for cross-platform compatibility
-    // These resolve ambiguities across different compilers (MSVC, GCC, Clang)
-    ToonValue& operator=(int value);        // For plain int literals
-    ToonValue& operator=(long value);       // For long literals
-    ToonValue& operator=(unsigned int value);  // For unsigned int
-    ToonValue& operator=(unsigned long value); // For unsigned long
-    ToonValue& operator=(short value);      // For short
-    ToonValue& operator=(unsigned short value); // For unsigned short
+    // Use templates with SFINAE to only enable when type is different from int32_t
+    template<typename T>
+    typename std::enable_if<
+        std::is_integral<T>::value &&
+        !std::is_same<T, bool>::value &&
+        !std::is_same<T, int32_t>::value,
+        ToonValue&
+    >::type operator=(T value) {
+        return operator=(static_cast<int32_t>(value));
+    }
 
     ToonValue& operator=(float value);
     ToonValue& operator=(double value);

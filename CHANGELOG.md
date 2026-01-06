@@ -2,6 +2,29 @@
 
 All notable changes to ESPToon will be documented in this file.
 
+## [1.0.4] - 2026-01-07
+
+### Fixed
+- **CRITICAL: Windows 32-bit Duplicate Operator Declaration** - Fixed "cannot be overloaded" error on Windows
+  - Removed explicit `operator=(int)`, `operator=(long)`, and other integer overloads
+  - Replaced with SFINAE template that detects type differences at compile-time
+  - Template automatically enables only for integer types that are different from int32_t
+  - Resolves conflict on Windows where `int`, `long`, and `int32_t` are all the same type (4 bytes)
+  - Works correctly on Linux/Mac where `long` is 8 bytes and different from `int32_t`
+
+### Changed
+- Updated library version to 1.0.4
+- Moved integer type handling from explicit overloads to template-based approach
+- Added `#include <type_traits>` for std::enable_if and std::is_same
+
+### Technical Details
+The root cause was that on Windows 32-bit platforms:
+- `sizeof(int) == 4`
+- `sizeof(long) == 4`
+- `sizeof(int32_t) == 4`
+
+All three types are identical, so declaring separate overloads caused duplicate function declarations. The template solution uses compile-time type checking to only enable the overload when the type is actually different from int32_t.
+
 ## [1.0.3] - 2026-01-07
 
 ### Fixed
